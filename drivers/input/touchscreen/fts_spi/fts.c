@@ -161,7 +161,7 @@ void release_all_touches(struct fts_ts_info *info)
 	unsigned int type = MT_TOOL_FINGER;
 	int i;
 
-	dsi_display_primary_request_fod_hbm(0);
+	
 	for (i = 0; i < TOUCH_ID_MAX; i++) {
 #ifdef STYLUS_MODE
 		if (test_bit(i, &info->stylus_id))
@@ -1244,7 +1244,7 @@ static ssize_t stm_fts_cmd_show(struct device *dev,
 			res = (res | ERROR_DISABLE_INTER);
 			goto END;
 		}
-		res = mi_disp_unregister_client(&info->notifier);
+		res = 0
 		if (res < 0) {
 			logError(1, "%s ERROR: unregister notifier failed!\n",
 				 tag);
@@ -1467,8 +1467,8 @@ static ssize_t stm_fts_cmd_show(struct device *dev,
 		res = ERROR_OP_NOT_ALLOW;
 
 	}
-	if (mi_disp_register_client(&info->notifier) < 0) {
-		logError(1, "%s ERROR: register notifier failed!\n", tag);
+	
+	
 	}
 END:
 	all_strbuff = (u8 *) kzalloc(size, GFP_KERNEL);
@@ -3955,7 +3955,7 @@ static void fts_enter_pointer_event_handler(struct fts_ts_info *info,
 		if (fts_is_in_fodarea(x, y) && !(info->fod_id & ~(1 << touchId))) {
 			__set_bit(touchId, &info->sleep_finger);
 			if (fts_fingerprint_is_enable()) {
-				dsi_display_primary_request_fod_hbm(1);
+				
 				info->fod_x = x;
 				info->fod_y = y;
 				info->fod_coordinate_update = true;
@@ -3966,7 +3966,7 @@ static void fts_enter_pointer_event_handler(struct fts_ts_info *info,
 				input_sync(info->input_dev);
 			}
 		} else if (__test_and_clear_bit(touchId, &info->fod_id)) {
-			dsi_display_primary_request_fod_hbm(0);
+			
 			input_report_abs(info->input_dev, ABS_MT_WIDTH_MINOR, 0);
 			input_report_key(info->input_dev, BTN_INFO, 0);
 			update_fod_press_status(0);
@@ -5524,7 +5524,7 @@ int fts_chip_powercycle(struct fts_ts_info *info)
 static int fts_init_sensing(struct fts_ts_info *info)
 {
 	int error = 0;
-	error |= mi_disp_register_client(&info->notifier);
+	
 	error |= fts_interrupt_install(info);
 	error |= fts_mode_handler(info, 0);
 #ifdef FTS_FOD_AREA_REPORT
@@ -8861,7 +8861,7 @@ ProbeErrorExit_7:
 		kfree(info->dma_buf->wrBuf);
 #endif
 ProbeErrorExit_6:
-	mi_disp_unregister_client(&info->notifier);
+	
 	input_unregister_device(info->input_dev);
 #ifdef CONFIG_FTS_POWERSUPPLY_CB
 	power_supply_unreg_notifier(&info->power_supply_notifier);
@@ -8932,7 +8932,7 @@ static int fts_remove(struct spi_device *client)
 #ifdef CONFIG_FTS_BL_CB
 	backlight_unregister_notifier(&info->bl_notifier);
 #endif
-	mi_disp_unregister_client(&info->notifier);
+	
 	/* unregister the device */
 	input_unregister_device(info->input_dev);
 
